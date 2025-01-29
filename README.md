@@ -31,6 +31,10 @@ git clone git@github.com:thehouseplant/k6-starter.git
 # Install the dependencies
 npm install
 
-# Run local test runner
-k6 run index.js
+# Run testing scenarios
+k6 run index.js --scenario smoke
+k6 run index.js --scenario load
+k6 run index.js --scenario stress
+k6 run index.js --scenario spike
+k6 run index.js --scenario soak
 ````
