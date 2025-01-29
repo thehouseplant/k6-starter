@@ -14,7 +14,7 @@ export default function () {
   // Example payload and headers
   const payload = JSON.stringify({
     test: 'data',
-    timestamp = new Date().toISOString(),
+    timestamp: new Date().toISOString(),
   });
 
   // Define parameters
