@@ -84,30 +84,47 @@ export default function () {
     },
   };
 
+  // Send a POST request to the endpolint
+  const response = http.post(endpoint, payload, params);
+
   // Scenario-specific logic
   switch(scenario) {
     case 'load':
+      // Check if the response is HTTP 200 (OK)
+      check(response, {
+        'is status 200': (r) => r.status === 200,
+        'response time < 200ms': (r) => r.timings.duration < 200,
+        'response includes success': (r) => r.json().success === true,
+      });
       break;
 
     case 'stress':
+      // Check if the response is HTTP 200 (OK)
+      check(response, {
+        'is status 200': (r) => r.status === 200,
+        'response time < 200ms': (r) => r.timings.duration < 200,
+        'response includes success': (r) => r.json().success === true,
+      });
       break;
 
     case 'spike':
+      // Check if the response is HTTP 200 (OK)
+      check(response, {
+        'is status 200': (r) => r.status === 200,
+        'response time < 200ms': (r) => r.timings.duration < 200,
+        'response includes success': (r) => r.json().success === true,
+      });
       break;
 
     case 'soak':
+      // Check if the response is HTTP 200 (OK)
+      check(response, {
+        'is status 200': (r) => r.status === 200,
+        'response time < 200ms': (r) => r.timings.duration < 200,
+        'response includes success': (r) => r.json().success === true,
+      });
       break;
   }
-
-  // Send a POST request to the endpoint
-  const response = http.post(endpoint, payload, params);
-
-  // Check if the response is HTTP 200 (OK)
-  check(response, {
-    'is status 200': (r) => r.status === 200,
-    'response time < 200ms': (r) => r.timings.duration < 200,
-    'response includes success': (r) => r.json().success === true,
-  });
 
   // Sleep for a short random duration between requests
   sleep(Math.random() * 4 + 1); // 1 to 5s
