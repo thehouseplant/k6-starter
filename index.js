@@ -65,8 +65,21 @@ export const options = {
 
     // Define various thresholds
     thresholds: {
-      http_req_duration: ['p(95)<500'], // 95% of requests should be below 500ms
-      http_req_failed: ['rate<0.01'],   // Less than 1% of requests should fail
+      // Define thresholds based on scenario
+      'http_req_duration': [
+        // Strict threshold for smoke test
+        {
+          threshold: 'p(95)<500', // 95% of requests should be below 500ms
+          abortOnFail: true,
+          delayAbortFail: '10s',
+        },
+        // More lenient load for load/stress tests
+        {
+          threshold: 'p(95)<1000', // 95% of requests should be below 1000ms
+          abortOnFail: false,
+        }
+      ],
+      'http_req_failed': ['rate<0.01'], // Less than 1% of requests should fail
     },
   },
 };
