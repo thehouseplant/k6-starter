@@ -18,8 +18,12 @@ git clone git@github.com:thehouseplant/k6-starter.git
 # Build the Docker image
 docker build -t k6-starter .
 
-# Run the container
-docker run -i k6-starter
+# Run testing scenarios
+docker run -i k6-starter --scenario smoke
+docker run -i k6-starter --scenario load
+docker run -i k6-starter --scenario stress
+docker run -i k6-starter --scenario spike
+docker run -i k6-starter --scenario soak
 ```
 
 ### Development
