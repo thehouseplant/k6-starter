@@ -4,7 +4,7 @@ import { check, sleep } from 'k6';
 // Define test scenarios
 export const options = {
   scenarios: {
-    // Load test: "Knock knock, housekeeping"
+    // Load test: Sustained moderate load
     load: {
       executor: 'ramping-vus',
       startVUs: 0,
@@ -17,7 +17,7 @@ export const options = {
       tags: { scenario: 'load' },
     },
 
-    // Stress test: "I will break you"
+    // Stress test: Heavy load to find breaking points
     stress: {
       executor: 'ramping-vus',
       startVUs: 0,
@@ -31,7 +31,7 @@ export const options = {
       tags: { scenario: 'stress' },
     },
 
-    // Spike test: "You scared the CRAP out of me!"
+    // Spike test: Sudden burst of traffic
     spike: {
       executor: 'ramping-vus',
       startVUs: 0,
@@ -45,7 +45,7 @@ export const options = {
       tags: { scenario: 'spike' },
     },
 
-    // Soak test: "Stop smothering me, MOM!"
+    // Soak test: Long duration with sustained load
     soak: {
       executor: 'constant-vus',
       vus: 50,
