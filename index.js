@@ -86,7 +86,7 @@ export const options = {
 
 export default function () {
   // Fetch the scenario for functional logic
-  const scenario = __ENV.SCENARIO || 'load';
+  const scenario = __ENV.SCENARIO || 'smoke';
 
   // Define the endpoint URL
   const BASE_URL = 'https://test-api.k6.io/';
