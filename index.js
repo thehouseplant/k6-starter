@@ -4,6 +4,15 @@ import { check, sleep } from 'k6';
 // Define test scenarios
 export const options = {
   scenarios: {
+    // Smoke test: Quick test with minimal load
+    smoke: {
+      executor: 'constant-vus',
+      vus: 1,
+      duration: '1m',
+      env: { SCENARIO: 'smoke' },
+      tags: { scenario: 'smoke' },
+    },
+
     // Load test: Sustained moderate load
     load: {
       executor: 'ramping-vus',
@@ -89,6 +98,15 @@ export default function () {
 
   // Scenario-specific logic
   switch(scenario) {
+    case 'smoke':
+      // Check if the response is HTTP 200 (OK)
+      check(response, {
+        'is status 200': (r) => r.status === 200,
+        'response time < 200ms': (r) => r.timings.duration < 200,
+        'response includes success': (r) => r.json().success === true,
+      });
+      break;
+
     case 'load':
       // Check if the response is HTTP 200 (OK)
       check(response, {
