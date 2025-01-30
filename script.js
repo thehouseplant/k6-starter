@@ -89,13 +89,12 @@ export default function () {
   const scenario = __ENV.SCENARIO || 'smoke';
 
   // Define endpoint URL
-  const BASE_URL = 'https://test-api.k6.io/';
-  const endpoint = `${BASE_URL}/public/crocodiles/`
+  const BASE_URL = 'http://localhost:3000';
 
   // Define headers
   const headers = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${__ENV.API_TOKEN}`,
+    //'Authorization': `Bearer ${__ENV.API_TOKEN}`,
   };
 
   // Scenario-specific logic
@@ -117,8 +116,8 @@ export default function () {
       });
 
       const responses = http.batch([
-        ['GET', `${BASE_URL}/api/resource`, null, { headers }],
-        ['POST', `${BASE_URL}/api/resource`, JSON.stringify(payload), { headers }],
+        ['GET', `${BASE_URL}/api/items`, null, { headers }],
+        ['POST', `${BASE_URL}/api/items`, JSON.stringify(payload), { headers }],
         ['GET', `${BASE_URL}/api/status`, null, { headers }],
       ]);
 
@@ -132,15 +131,15 @@ export default function () {
 
     case 'spike':
       // Simple API workflow
-      const response = http.post(`${BASE_URL}/api/resource`, JSON.stringify(payload), { headers });
+      const response = http.post(`${BASE_URL}/api/items`, JSON.stringify(payload), { headers });
       break;
 
     case 'soak':
       // Mixed operations for soak testing
       if (Math.random() < 0.7) {
-        http.get(`${BASE_URL}/api/resource`, { headers });
+        http.get(`${BASE_URL}/api/items`, { headers });
       } else {
-        http.post(`${BASE_URL}/api/resource`, JSON.stringify(payload), { headers });
+        http.post(`${BASE_URL}/api/items`, JSON.stringify(payload), { headers });
       }
       break;
   }
