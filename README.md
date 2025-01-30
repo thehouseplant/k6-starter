@@ -37,10 +37,13 @@ git clone git@github.com:thehouseplant/k6-starter.git
 npm install
 ```
 
-#### Running Development Server
+#### Running Test Server
 ```zsh
 # Start the local test server
 npm run start
+
+# Start the local test server (auto-reload)
+npm run dev
 ```
 
 #### Running k6
