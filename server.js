@@ -75,6 +75,15 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+// Add error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    error: 'Internal server error',
+    message: err.message
+  });
+});
+
 // Start Express server
 app.listen(port, () => {
   console.log(`Test server running on port ${port}`);
