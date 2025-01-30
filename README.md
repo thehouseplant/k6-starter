@@ -28,13 +28,23 @@ docker run -i k6-starter --scenario soak
 
 ### Development
 
+#### Setup Local Environment
 ```zsh
 # Clone the repository
 git clone git@github.com:thehouseplant/k6-starter.git
 
 # Install the dependencies
 npm install
+```
 
+#### Running Development Server
+```zsh
+# Start the local test server
+npm run start
+```
+
+#### Running k6
+```zsh
 # Run testing scenarios
 k6 run script.js --scenario smoke
 k6 run script.js --scenario load
