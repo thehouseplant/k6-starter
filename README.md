@@ -36,9 +36,9 @@ git clone git@github.com:thehouseplant/k6-starter.git
 npm install
 
 # Run testing scenarios
-k6 run index.js --scenario smoke
-k6 run index.js --scenario load
-k6 run index.js --scenario stress
-k6 run index.js --scenario spike
-k6 run index.js --scenario soak
+k6 run script.js --scenario smoke
+k6 run script.js --scenario load
+k6 run script.js --scenario stress
+k6 run script.js --scenario spike
+k6 run script.js --scenario soak
 ````
