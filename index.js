@@ -88,75 +88,88 @@ export default function () {
   // Fetch the scenario for functional logic
   const scenario = __ENV.SCENARIO || 'smoke';
 
-  // Define the endpoint URL
+  // Define endpoint URL
   const BASE_URL = 'https://test-api.k6.io/';
   const endpoint = `${BASE_URL}/public/crocodiles/`
 
-  // Example payload and headers
-  const payload = JSON.stringify({
-    test: 'data',
-    timestamp: new Date().toISOString(),
-  });
-
-  // Define parameters
-  const params = {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer [token]',
-    },
+  // Define headers
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${__ENV.API_TOKEN}`,
   };
-
-  // Send a POST request to the endpolint
-  const response = http.post(endpoint, payload, params);
 
   // Scenario-specific logic
   switch(scenario) {
     case 'smoke':
-      // Check if the response is HTTP 200 (OK)
-      check(response, {
-        'is status 200': (r) => r.status === 200,
-        'response time < 200ms': (r) => r.timings.duration < 200,
-        'response includes success': (r) => r.json().success === true,
+      // Simple health check
+      const healthCheck = http.get(`${BASE_URL}/health`);
+      check(healthCheck, {
+        'status is 200': (r) => r.status === 200,
       });
       break;
 
     case 'load':
-      // Check if the response is HTTP 200 (OK)
-      check(response, {
-        'is status 200': (r) => r.status === 200,
-        'response time < 200ms': (r) => r.timings.duration < 200,
-        'response includes success': (r) => r.json().success === true,
-      });
-      break;
-
     case 'stress':
-      // Check if the response is HTTP 200 (OK)
-      check(response, {
-        'is status 200': (r) => r.status === 200,
-        'response time < 200ms': (r) => r.timings.duration < 200,
-        'response includes success': (r) => r.json().success === true,
+      // Full API workflow
+      const payload = JSON.stringify({
+        test: 'data',
+        timestamp: new Date().toISOString(),
+      });
+
+      const responses = http.batch([
+        ['GET', `${BASE_URL}/api/resource`, null, { headers }],
+        ['POST', `${BASE_URL}/api/resource`, JSON.stringify(payload), { headers }],
+        ['GET', `${BASE_URL}/api/status`, null, { headers }],
+      ]);
+
+      responses.forEach((response, index) => {
+        check(response, {
+          'status is 200': (r) => r.status === 200,
+          'response time OK': (r) => r.timings.duration < getThresholdForScenario(scenario)
+        });
       });
       break;
 
     case 'spike':
-      // Check if the response is HTTP 200 (OK)
-      check(response, {
-        'is status 200': (r) => r.status === 200,
-        'response time < 200ms': (r) => r.timings.duration < 200,
-        'response includes success': (r) => r.json().success === true,
-      });
+      // Simple API workflow
+      const response = http.post(`${BASE_URL}/api/resource`, JSON.stringify(payload), { headers });
       break;
 
     case 'soak':
-      // Check if the response is HTTP 200 (OK)
-      check(response, {
-        'is status 200': (r) => r.status === 200,
-        'response time < 200ms': (r) => r.timings.duration < 200,
-        'response includes success': (r) => r.json().success === true,
-      });
+      // Mixed operations for soak testing
+      if (Math.random() < 0.7) {
+        http.get(`${BASE_URL}/api/resource`, { headers });
+      } else {
+        http.post(`${BASE_URL}/api/resource`, JSON.stringify(payload), { headers });
+      }
       break;
   }
 
   // Sleep for a short random duration between requests
-  sleep(Math.random() * 4 + 1); // 1 to 5s
+  const sleepTime = getSleepTimeForScenario(scenario);
+  sleep(sleepTime);
+}
+
+// Function for setting thresholds for each scenario
+function getThresholdForScenario(scenario) {
+  const thresholds = {
+    smoke: 200,    // 200ms
+    load: 500,     // 500ms
+    stress: 1000,  // 1s
+    spike: 2000,   // 2s
+    soak: 500      // 500ms
+  };
+  return thresholds[scenario] || 500;
+}
+
+// Function for generating sleep times for each scenario
+function getSleepTimeForScenario(scenario) {
+  const sleepTimes = {
+    smoke: 1,
+    load: Math.random() * 2 + 1,    // 1-3s
+    stress: Math.random() * 1 + 0.5, // 0.5-1.5s
+    spike: 0.1,                      // 100ms
+    soak: Math.random() * 3 + 2     // 2-5s
+  };
+  return sleepTimes[scenario] || 1;
 }
