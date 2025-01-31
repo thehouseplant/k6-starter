@@ -132,6 +132,24 @@ export default function () {
     case 'spike':
       // Simple API workflow
       const response = http.post(`${BASE_URL}/api/items`, JSON.stringify(payload), { headers });
+
+      check(response, {
+        'status is 200 or 201': (r) => [200, 201].includes(r.status),
+        'response time OK': (r) => r.timings.duration < getThresholdForScenario(scenario),
+        'response has valid JSON': (r) => {
+          try {
+            JSON.parse(r.body);
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+      });
+
+      // Check for error rate during spike
+      if (response.status >= 500) {
+        console.warn(`Spike test encountered server error: ${response.status}`);
+      }
       break;
 
     case 'soak':
