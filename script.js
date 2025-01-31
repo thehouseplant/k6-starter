@@ -4,6 +4,7 @@ import { check, sleep } from 'k6';
 // Define test scenarios
 export const options = {
   scenarios: {
+
     // Smoke test: Quick test with minimal load
     smoke: {
       executor: 'constant-vus',
@@ -12,6 +13,7 @@ export const options = {
       env: { SCENARIO: 'smoke' },
       tags: { scenario: 'smoke' },
     },
+
 
     // Load test: Sustained moderate load
     load: {
@@ -25,6 +27,7 @@ export const options = {
       env: { SCENARIO: 'load' },
       tags: { scenario: 'load' },
     },
+
 
     // Stress test: Heavy load to find breaking points
     stress: {
@@ -40,6 +43,7 @@ export const options = {
       tags: { scenario: 'stress' },
     },
 
+
     // Spike test: Sudden burst of traffic
     spike: {
       executor: 'ramping-vus',
@@ -54,6 +58,7 @@ export const options = {
       tags: { scenario: 'spike' },
     },
 
+
     // Soak test: Long duration with sustained load
     soak: {
       executor: 'constant-vus',
@@ -62,6 +67,7 @@ export const options = {
       env: { SCENARIO: 'soak' },
       tags: { scenario: 'soak' },
     },
+
 
     // Define various thresholds
     thresholds: {
@@ -88,8 +94,10 @@ export default function () {
   // Fetch the scenario for functional logic
   const scenario = __ENV.SCENARIO || 'smoke';
 
+
   // Define endpoint URL
   const BASE_URL = 'http://localhost:3000';
+
 
   // Define headers
   const headers = {
@@ -97,8 +105,11 @@ export default function () {
     //'Authorization': `Bearer ${__ENV.API_TOKEN}`,
   };
 
+
   // Scenario-specific logic
   switch(scenario) {
+
+    // Smoke test
     case 'smoke':
       // Simple health check
       const healthCheck = http.get(`${BASE_URL}/health`);
@@ -107,7 +118,12 @@ export default function () {
       });
       break;
 
+
+    // Load test
     case 'load':
+
+
+    // Stress test
     case 'stress':
       // Full API workflow
       const payload = JSON.stringify({
@@ -129,6 +145,8 @@ export default function () {
       });
       break;
 
+
+    // Spike test
     case 'spike':
       // Simple API workflow
       const response = http.post(`${BASE_URL}/api/items`, JSON.stringify(payload), { headers });
@@ -152,6 +170,8 @@ export default function () {
       }
       break;
 
+
+    // Soak test
     case 'soak':
       // Mixed operations for soak testing
       if (Math.random() < 0.7) {
@@ -167,6 +187,7 @@ export default function () {
   sleep(sleepTime);
 }
 
+
 // Function for setting thresholds for each scenario
 function getThresholdForScenario(scenario) {
   const thresholds = {
@@ -178,6 +199,7 @@ function getThresholdForScenario(scenario) {
   };
   return thresholds[scenario] || 500;
 }
+
 
 // Function for generating sleep times for each scenario
 function getSleepTimeForScenario(scenario) {
